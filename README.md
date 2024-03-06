@@ -1,1 +1,1 @@
-# chinese-chess
+# Deployed to https://lzhang2023ad.github.io/chinese-chess/
