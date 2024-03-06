@@ -1,4 +1,5 @@
 const EMPTY = 'empty';
+const HINT = 'hint';
 const CHARIOT_B = 'chariot_black';
 const HORSE_B = 'horse_black';
 const ELEPHANT_B = 'elephant_black';
@@ -44,7 +45,7 @@ var placeBoard = function(ele, i, j, color, name) {
   ele.attr('name', name);
   ele.css('top', PIECE_HORIZONTAL_PADDING + i * (PIECE_WIDTH + PIECE_MARGIN));
   ele.css('left', PIECE_VERTICAL_PADDING + j * (PIECE_WIDTH + PIECE_MARGIN));
-  if (name !== EMPTY) currentBoard[i][j] = name;
+  if (name !== EMPTY && name !== HINT) currentBoard[i][j] = name;
 }
 var win = function(color) {
   $('.win-modal').removeClass('red black').addClass(color);
@@ -58,11 +59,10 @@ var changeTurn = function(color) {
   $('.indicator-black').removeClass('selected');
   $('.indicator-' + color).addClass('selected');
 }
-var isValidMove = function(selected, target) {
+var isValidMove = function(selected, targetX, targetY) {
   var selectedX = parseInt(selected.attr('row'));
   var selectedY = parseInt(selected.attr('col'));
-  var targetX = parseInt(target.attr('row'));
-  var targetY = parseInt(target.attr('col'));
+  if (currentBoard[targetX][targetY] !== EMPTY && currentBoard[selectedX][selectedY].split('_')[1] === currentBoard[targetX][targetY].split('_')[1]) return false;
   var type = selected.attr('name').split('_')[0];
   if (type === 'soldier') {
     if (currentTurn === 'red') {
@@ -170,11 +170,9 @@ var isValidMove = function(selected, target) {
     }
   }
 };
-var isGeneralValid = function(selected, target) {
+var isGeneralValid = function(selected, targetX, targetY) {
   var selectedX = parseInt(selected.attr('row'));
   var selectedY = parseInt(selected.attr('col'));
-  var targetX = parseInt(target.attr('row'));
-  var targetY = parseInt(target.attr('col'));
   var generalRedX = parseInt($('.board').find('.general.red').attr('row'));
   var generalRedY = parseInt($('.board').find('.general.red').attr('col'));
   var generalBlackX = parseInt($('.board').find('.general.black').attr('row'));
@@ -214,9 +212,19 @@ var readBoard = function(board) {
       $('.chess-piece').removeClass('selected');
       $(this).addClass('selected');
       selected = $(this);
+      $(".board .hint").remove();
+      for (var i=0; i<board.length; i++) {
+      	for (var j=0; j<board[i].length; j++) {
+      		if (isValidMove(selected, i, j) && isGeneralValid(selected, i, j)) {
+      			var ele = $('<div class="chess-piece hint"></div>');
+      			$('.board').append(ele);
+      			placeBoard(ele, i, j, 'hint', HINT);
+      		}
+      	}
+      }
     }
     else {
-      if (isValidMove(selected, $(this)) && isGeneralValid(selected, $(this))) {
+      if (isValidMove(selected, parseInt($(this).attr('row')), parseInt($(this).attr('col'))) && isGeneralValid(selected, parseInt($(this).attr('row')), parseInt($(this).attr('col')))) {
       	record.push([deepCloneBoard(currentBoard), currentTurn]);
         if (!$(this).hasClass('empty')) {
           if ($(this).hasClass('general')) {
@@ -231,6 +239,7 @@ var readBoard = function(board) {
         else changeTurn('red');
         selected = false;
         $('.chess-piece').removeClass('selected');
+        $(".board .hint").remove();
       }
     }
     //console.log(board);
@@ -261,6 +270,9 @@ $('.restart').off('click').on('click', function() {
 });
 $('.undo').off('click').on('click', function() {
   undo();
+});
+$('.toggle-hint').off('click').on('click', function() {
+  $('.board').toggleClass('hide-hint');
 });
 currentBoard = deepCloneBoard(INIT_BOARD);
 restartGame(currentBoard, 'red');
