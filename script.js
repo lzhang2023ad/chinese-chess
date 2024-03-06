@@ -14,26 +14,29 @@ const ADVISOR_R = 'advisor_red';
 const GENERAL_R = 'general_red';
 const CANNON_R = 'cannon_red';
 const SOLDIER_R = 'soldier_red';
+const HINTSON = 'Hints: ON';
+const HINTSOFF = 'Hints: OFF';
 const PIECE_WIDTH = 75;
 const PIECE_MARGIN = 7;
 const PIECE_VERTICAL_PADDING = 72;
 const PIECE_HORIZONTAL_PADDING = 72;
 const INIT_BOARD = [
-  [CHARIOT_B, HORSE_B, ELEPHANT_B, ADVISOR_B, GENERAL_B, ADVISOR_B, ELEPHANT_B, HORSE_B, CHARIOT_B],
-  [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-  [EMPTY, CANNON_B, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, CANNON_B, EMPTY],
-  [SOLDIER_B, EMPTY, SOLDIER_B, EMPTY, SOLDIER_B, EMPTY, SOLDIER_B, EMPTY, SOLDIER_B],
-  [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-  [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-  [SOLDIER_R, EMPTY, SOLDIER_R, EMPTY, SOLDIER_R, EMPTY, SOLDIER_R, EMPTY, SOLDIER_R],
-  [EMPTY, CANNON_R, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, CANNON_R, EMPTY],
-  [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-  [CHARIOT_R, HORSE_R, ELEPHANT_R, ADVISOR_R, GENERAL_R, ADVISOR_R, ELEPHANT_R, HORSE_R, CHARIOT_R]
+  [CHARIOT_B, HORSE_B,  ELEPHANT_B, ADVISOR_B, GENERAL_B, ADVISOR_B, ELEPHANT_B, HORSE_B,  CHARIOT_B],
+  [EMPTY,     EMPTY,    EMPTY,      EMPTY,     EMPTY,     EMPTY,     EMPTY,      EMPTY,    EMPTY],
+  [EMPTY,     CANNON_B, EMPTY,      EMPTY,     EMPTY,     EMPTY,     EMPTY,      CANNON_B, EMPTY],
+  [SOLDIER_B, EMPTY,    SOLDIER_B,  EMPTY,     SOLDIER_B, EMPTY,     SOLDIER_B,  EMPTY,    SOLDIER_B],
+  [EMPTY,     EMPTY,    EMPTY,      EMPTY,     EMPTY,     EMPTY,     EMPTY,      EMPTY,    EMPTY],
+  [EMPTY,     EMPTY,    EMPTY,      EMPTY,     EMPTY,     EMPTY,     EMPTY,      EMPTY,    EMPTY],
+  [SOLDIER_R, EMPTY,    SOLDIER_R,  EMPTY,     SOLDIER_R, EMPTY,     SOLDIER_R,  EMPTY,    SOLDIER_R],
+  [EMPTY,     CANNON_R, EMPTY,      EMPTY,     EMPTY,     EMPTY,     EMPTY,      CANNON_R, EMPTY],
+  [EMPTY,     EMPTY,    EMPTY,      EMPTY,     EMPTY,     EMPTY,     EMPTY,      EMPTY,    EMPTY],
+  [CHARIOT_R, HORSE_R,  ELEPHANT_R, ADVISOR_R, GENERAL_R, ADVISOR_R, ELEPHANT_R, HORSE_R,  CHARIOT_R]
 ];
 
 var currentBoard;
 var currentTurn;
 var selected;
+var showHints = true;
 var record = [];
 
 var placeBoard = function(ele, i, j, color, name) {
@@ -272,7 +275,17 @@ $('.undo').off('click').on('click', function() {
   undo();
 });
 $('.toggle-hint').off('click').on('click', function() {
-  $('.board').toggleClass('hide-hint');
+  if (showHints) {
+    $('.board').addClass('hide-hint');
+    $('.toggle-hint').text(HINTSOFF);
+    showHints = false;
+  } else {
+    $('.board').removeClass('hide-hint');
+    $('.toggle-hint').text(HINTSON);
+    showHints = true;
+  }
+
+
 });
 currentBoard = deepCloneBoard(INIT_BOARD);
 restartGame(currentBoard, 'red');
